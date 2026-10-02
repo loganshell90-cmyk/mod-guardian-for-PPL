@@ -1,0 +1,45 @@
+TITLE: ❓ How to Use Ultimate Editor + FAQ
+
+[h1]How to Use Ultimate Editor[/h1]
+
+[h2]1. Install[/h2]
+[olist]
+[*]Click [b]Subscribe[/b] on the Workshop page.
+[*]Start People Playground.
+[*]Open the [b]Mods[/b] menu and make sure [b]Ultimate Editor[/b] is turned on.
+[/olist]
+
+[h2]2. Open the editor[/h2]
+[olist]
+[*][HOW TO OPEN IT — e.g. "Find Ultimate Editor in the [CATEGORY] category and spawn it"]
+[*][NEXT STEP]
+[/olist]
+
+[h2]3. Main features[/h2]
+[list]
+[*][b][FEATURE 1][/b] — [what it does and how to use it]
+[*][b][FEATURE 2][/b] — [what it does and how to use it]
+[*][b][FEATURE 3][/b] — [what it does and how to use it]
+[/list]
+
+[h2]Controls[/h2]
+[table]
+[tr][th]Key / Action[/th][th]What it does[/th][/tr]
+[tr][td][KEY][/td][td][ACTION][/td][/tr]
+[tr][td][KEY][/td][td][ACTION][/td][/tr]
+[/table]
+
+[h1]FAQ[/h1]
+[b]Q: The mod doesn't show up![/b]
+A: Make sure it's turned on in the Mods menu, then restart the game. If it still isn't there, unsubscribe, wait a minute, and subscribe again.
+
+[b]Q: Will an update delete my creations?[/b]
+A: It shouldn't, but always [url=[LINK TO BACKUP THREAD]]make a backup[/url] before updating just in case.
+
+[b]Q: Does it work with other mods?[/b]
+A: Usually yes. If something breaks, try turning other mods off and post in [url=[LINK TO BUG THREAD]]Bug Reports[/url].
+
+[b]Q: Can I use it in my own mod / video?[/b]
+A: [YOUR ANSWER]
+
+[i]Question not here? Ask below and I'll add it to the FAQ![/i]

@@ -1,0 +1,26 @@
+TITLE: 📌 START HERE - Ultimate Editor info, bugs, feedback & updates
+
+[h1]Welcome to Ultimate Editor![/h1]
+Thanks for trying the mod! This page shows you where to post so nothing gets lost.
+
+[h2]Where to post[/h2]
+[list]
+[*][b]🐞 Found a bug?[/b] → [url=[LINK TO BUG THREAD]]Bug Reports[/url]
+[*][b]💬 Like it? Don't like it? Have an idea?[/b] → [url=[LINK TO FEEDBACK THREAD]]Feedback & Suggestions[/url]
+[*][b]❓ How do I use it?[/b] → [url=[LINK TO GUIDE THREAD]]How to Use + FAQ[/url]
+[*][b]💾 Backing up your stuff[/b] → [url=[LINK TO BACKUP THREAD]]Backup Guide[/url]
+[*][b]🆕 What's new?[/b] → Look for the newest [b]"Weekly Update"[/b] thread
+[/list]
+
+[h2]Update schedule[/h2]
+I update Ultimate Editor [b]every week[/b] (usually on [DAY]). Each update gets its own post listing new features and fixes.
+
+[h2]Rules[/h2]
+[list]
+[*]Be nice. Criticism is welcome, insults are not.
+[*]One bug per post, please — it makes them much easier to fix.
+[*]Search first — your question may already be answered.
+[*]No re-uploads of this mod without permission.
+[/list]
+
+Thanks for playing! — [YOUR NAME]

@@ -1,0 +1,25 @@
+TITLE: 💬 Feedback & Suggestions - like it? hate it? tell me!
+
+[h1]Feedback & Suggestions[/h1]
+I want to know what you think of Ultimate Editor — the good [b]and[/b] the bad. Honest feedback is how the mod gets better.
+
+[h2]Quick feedback (copy & fill in)[/h2]
+[code]
+What I like:
+What I don't like:
+What I'd change:
+Feature I wish it had:
+Rating (1-10):
+[/code]
+
+[h2]Suggesting a new feature?[/h2]
+[list]
+[*]Say [b]what[/b] it should do and [b]why[/b] it would be useful.
+[*]Check if someone already suggested it — if so, reply to theirs so I can see how many people want it.
+[*]Drawings or screenshots of what you mean are very welcome!
+[/list]
+
+[h2]What happens to suggestions?[/h2]
+I read every one. Ideas I'm adding show up in the [b]Weekly Update[/b] posts under "Coming soon." I can't add everything, but popular ideas get priority.
+
+[i]Not liking something is totally fine to say — just explain why so I can fix it. 🙂[/i]

@@ -1,0 +1,44 @@
+TITLE: 🐞 Bug Reports - post bugs here
+
+[h1]Bug Reports[/h1]
+Found something broken? Post it here! Please copy the form below and fill it in — the more detail, the faster I can fix it.
+
+[hr][/hr]
+[code]
+Mod version:        (see the newest Weekly Update post)
+Game version:       (shown on the People Playground main menu)
+Other mods on:      (list them, or "none")
+
+What happened:
+What I expected to happen:
+
+Steps to make it happen again:
+1.
+2.
+3.
+
+Does it happen every time? (yes / sometimes / once)
+[/code]
+[hr][/hr]
+
+[h2]Tips for a great report[/h2]
+[list]
+[*][b]Screenshots or a short video[/b] help a lot.
+[*]Try with [b]only Ultimate Editor turned on[/b]. If the bug goes away, tell me which other mod causes it.
+[*]If the game shows a red error, take a screenshot of it.
+[*][b]One bug per reply[/b], please.
+[/list]
+
+[h2]Bug status[/h2]
+I'll reply when I've seen a bug:
+[list]
+[*]👀 [b]Seen[/b] — I know about it
+[*]🔧 [b]Working on it[/b]
+[*]✅ [b]Fixed[/b] in [version] — check the Weekly Update post
+[*]❌ [b]Can't reproduce[/b] — I need more info
+[/list]
+
+[h2]Known bugs[/h2]
+[list]
+[*][None yet — I'll list them here]
+[/list]

@@ -1,0 +1,32 @@
+TITLE: 💾 Backup Guide - save your work before updates
+
+[h1]How to Back Up Your Stuff[/h1]
+Ultimate Editor updates every week. Updates [b]shouldn't[/b] break anything, but a backup takes 30 seconds and means you can never lose your work.
+
+[h2]What to back up[/h2]
+[list]
+[*][b]Your contraptions / saves[/b] — the [b]Contraptions[/b] folder in your People Playground game folder
+[*][b]Ultimate Editor settings[/b] — [WHERE THE MOD SAVES ITS SETTINGS, or delete this line]
+[/list]
+
+[h2]Step by step (Windows)[/h2]
+[olist]
+[*]Open Steam → right-click [b]People Playground[/b] → [b]Manage[/b] → [b]Browse local files[/b].
+[*]Find the [b]Contraptions[/b] folder.
+[*]Right-click it → [b]Copy[/b].
+[*]Paste it somewhere safe (Desktop, Documents, or a USB stick).
+[*]Rename the copy with today's date, like [b]Contraptions-backup-2026-10-02[/b].
+[/olist]
+
+[h2]Restoring a backup[/h2]
+[olist]
+[*]Close People Playground.
+[*]Copy your backup folder back into the game folder.
+[*]Rename it back to [b]Contraptions[/b] (replace the old one if Windows asks).
+[*]Start the game.
+[/olist]
+
+[h2]Want to go back to an older version of the mod?[/h2]
+Steam Workshop only keeps the newest version. If an update breaks something for you, report it in [url=[LINK TO BUG THREAD]]Bug Reports[/url] and I'll fix it in the next update (or sooner if it's serious).
+
+[i]Tip: make a backup every time you see a new Weekly Update post![/i]

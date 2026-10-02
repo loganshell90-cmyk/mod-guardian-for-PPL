@@ -1,0 +1,35 @@
+TITLE: 🆕 Weekly Update - [DATE] (v[VERSION])
+
+[h1]Ultimate Editor — Weekly Update [DATE][/h1]
+[b]Version:[/b] [VERSION]
+💾 [i]Remember to [url=[LINK TO BACKUP THREAD]]back up your stuff[/url] before playing![/i]
+
+[h2]✨ New features[/h2]
+[list]
+[*][b][NEW FEATURE][/b] — [what it does / how to use it]
+[/list]
+
+[h2]🔧 Changes[/h2]
+[list]
+[*][WHAT CHANGED]
+[/list]
+
+[h2]🐞 Bug fixes[/h2]
+[list]
+[*]Fixed [BUG] (thanks [USERNAME] for reporting!)
+[/list]
+
+[h2]⚠️ Known issues[/h2]
+[list]
+[*][STILL BROKEN, or "None right now!"]
+[/list]
+
+[h2]🔮 Coming soon[/h2]
+[list]
+[*][WHAT YOU'RE WORKING ON NEXT]
+[/list]
+
+[hr][/hr]
+Found a bug? → [url=[LINK TO BUG THREAD]]Bug Reports[/url]
+Like or dislike something? → [url=[LINK TO FEEDBACK THREAD]]Feedback[/url]
+Thanks for playing! — [YOUR NAME]
