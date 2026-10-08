@@ -1,7 +1,7 @@
 // Building islands, generators, teleporting, bots and floating leaderboards.
 import { system, world, GameMode } from "@minecraft/server";
 import { GEN_LEVELS, GEN_SPOTS, HUB_RADIUS, PLOTS } from "./config.js";
-import { getHub, getPlot, getStats, plotAt, plotCenter, savePlot, saveStats } from "./data.js";
+import { firstFreePlot, getHub, getPlot, getStats, plotAt, plotCenter, resetPlot, savePlot, saveStats, saveStatsById, statsById } from "./data.js";
 
 const overworld = () => world.getDimension("overworld");
 
@@ -214,4 +214,80 @@ export function claimPlot(player, n) {
   saveStats(player);
   rebuildGenIndex();
   return n;
+}
+
+/**
+ * Admin tool: puts a player on a different plot. Their generator upgrades go
+ * with them. If someone already owns that plot, the two players swap.
+ * Returns a message saying what happened.
+ */
+export function movePlayerToPlot(playerId, n) {
+  const stats = statsById(playerId);
+  if (!stats) return "§cThat player has never joined.";
+  const from = stats.plot;
+  if (from === n) return `§e${stats.name} is already on plot ${n}.`;
+
+  const target = getPlot(n);
+  const otherId = target.owner;
+  const mine = from ? getPlot(from) : undefined;
+  const myUpgrades = mine ? { gens: mine.gens, level: mine.level } : { gens: 1, level: 0 };
+  const theirUpgrades = { gens: target.gens, level: target.level };
+  let otherNewPlot = from;
+
+  if (otherId && from) {
+    // Swap: the other player gets this player's old plot, with their own upgrades.
+    const other = statsById(otherId);
+    Object.assign(mine, { owner: otherId, ownerName: other?.name ?? target.ownerName, ...theirUpgrades });
+    savePlot(from);
+    if (other) {
+      other.plot = from;
+      saveStatsById(otherId);
+    }
+  } else if (otherId) {
+    // This player had no plot to swap, so the other player moves to the next
+    // free plot and keeps their upgrades (or has none if every plot is taken).
+    const other = statsById(otherId);
+    target.owner = playerId; // so firstFreePlot skips it
+    const spare = firstFreePlot();
+    if (spare) {
+      Object.assign(getPlot(spare), { owner: otherId, ownerName: other?.name ?? target.ownerName, ...theirUpgrades });
+      savePlot(spare);
+    }
+    if (other) {
+      other.plot = spare;
+      saveStatsById(otherId);
+    }
+    otherNewPlot = spare;
+  } else if (from) {
+    resetPlot(from);
+  }
+
+  Object.assign(target, { owner: playerId, ownerName: stats.name, ...myUpgrades });
+  savePlot(n);
+  stats.plot = n;
+  saveStatsById(playerId);
+  rebuildGenIndex();
+
+  // Update generators that are loaded right now, and move anyone who's online.
+  for (const plot of [n, from, otherNewPlot].filter(Boolean)) {
+    try {
+      if (preparePlot(plot)) refreshGenerators(plot);
+    } catch {
+      // Not loaded; fixed next time someone visits.
+    }
+  }
+  const otherName = otherId ? statsById(otherId)?.name ?? target.ownerName : "";
+  for (const p of world.getAllPlayers()) {
+    if (p.id === playerId) {
+      p.sendMessage(`§eAn admin moved you to plot ${n}.`);
+      sendToPlot(p, n, true);
+    } else if (p.id === otherId) {
+      p.sendMessage(otherNewPlot ? `§eAn admin moved you to plot ${otherNewPlot}.` : "§eAn admin gave your plot to someone else.");
+      if (otherNewPlot) sendToPlot(p, otherNewPlot, true);
+    }
+  }
+
+  if (otherId && from) return `§aSwapped: ${stats.name} is now on plot ${n} and ${otherName} is on plot ${from}.`;
+  if (otherId) return `§a${stats.name} is now on plot ${n}. ${otherName} ${otherNewPlot ? `moved to plot ${otherNewPlot}` : "has no plot now (all plots are taken)"}.`;
+  return `§a${stats.name} is now on plot ${n}.`;
 }

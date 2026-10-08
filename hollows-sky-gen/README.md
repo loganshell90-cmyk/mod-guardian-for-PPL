@@ -63,3 +63,9 @@ is in BP/scripts/config.js. After editing, run "python build.py" to make a new
 Admins
 ------
 Admin = the "hsg_admin" tag. To add another admin (cheats on): /tag Name add hsg_admin
+
+Admin Tools (in the Sky Menu) can also:
+* Put a player on a different plot. Their generator upgrades move with them.
+  If that plot is taken, the two players swap. If the moved player had no plot,
+  the old owner moves to the next free plot instead.
+* Move a plot's island to where you're standing, or free up a plot.

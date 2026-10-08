@@ -6,6 +6,7 @@ import { addMoney, allPlayers, getPlot, getStats, kdr, money, rankName, resetPlo
 import { inMatch, joinQueue, leaveQueue, QUEUES, queueCount, queueOf } from "./pvp.js";
 import {
   buildHub,
+  movePlayerToPlot,
   preparePlot,
   rebuildGenIndex,
   refreshGenerators,
@@ -295,6 +296,7 @@ function adminMenu(player) {
     { text: "Spawn PvP Shop here", run: () => spawnBot("shop", player.location) },
     { text: "Remove nearest bot", run: () => removeNearestBot(player) },
     { text: "Move a plot to here", run: () => movePlotMenu(player) },
+    { text: "Put a player on a different plot", run: () => setPlotMenu(player) },
     { text: "Free up a plot", run: () => freePlotMenu(player) },
     { text: "Give me $1,000\n§8For testing", run: () => addMoney(player, 1000) },
     { text: "Back", run: () => skyMenu(player) },
@@ -334,6 +336,45 @@ function movePlotPage(player, start, end) {
     });
   }
   menu(player, "Move a plot", "Its island will be built under where you're standing. The old island stays where it was.", buttons);
+}
+
+function setPlotMenu(admin) {
+  const list = allPlayers().sort((a, b) => a.stats.name.localeCompare(b.stats.name));
+  menu(
+    admin,
+    "Change a player's plot",
+    "Pick the player to move.",
+    list.map(({ id, stats }) => ({
+      text: `${stats.name}\n§8${stats.plot ? "Plot " + stats.plot : "no plot"}`,
+      run: () => setPlotGroups(admin, id, stats.name),
+    }))
+  );
+}
+
+function setPlotGroups(admin, id, name) {
+  const buttons = [];
+  for (let start = 1; start <= PLOTS.count; start += 50) {
+    const end = Math.min(start + 49, PLOTS.count);
+    buttons.push({ text: `Plots ${start} - ${end}`, run: () => setPlotPage(admin, id, name, start, end) });
+  }
+  menu(admin, `Move ${name}`, "Pick which plots to choose from.", buttons);
+}
+
+function setPlotPage(admin, id, name, start, end) {
+  const buttons = [];
+  for (let n = start; n <= end; n++) {
+    const plot = getPlot(n);
+    buttons.push({
+      text: `Plot ${n}\n§8${plot.owner ? (plot.owner === id ? "their plot now" : plot.ownerName + " (swap)") : "empty"}`,
+      run: () => admin.sendMessage(movePlayerToPlot(id, n)),
+    });
+  }
+  menu(
+    admin,
+    `Move ${name}`,
+    "Their generator upgrades move with them. If the plot belongs to someone, the two players swap plots.",
+    buttons
+  );
 }
 
 function freePlotMenu(player) {

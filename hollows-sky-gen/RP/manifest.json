@@ -4,13 +4,13 @@
     "name": "Hollow's Sky Gen Resources",
     "description": "Textures and models for Hollow's Sky Gen.",
     "uuid": "769106ab-81fd-42c1-9084-2ae051a5f103",
-    "version": [0, 4, 0],
+    "version": [0, 5, 0],
     "min_engine_version": [1, 21, 90]
   },
   "modules": [
-    { "type": "resources", "uuid": "763828a0-e21a-42d9-add2-ea8bb6d2fd28", "version": [0, 4, 0] }
+    { "type": "resources", "uuid": "763828a0-e21a-42d9-add2-ea8bb6d2fd28", "version": [0, 5, 0] }
   ],
   "dependencies": [
-    { "uuid": "4e11e74b-ccc2-4cb8-97ed-91faea5b3a0c", "version": [0, 4, 0] }
+    { "uuid": "4e11e74b-ccc2-4cb8-97ed-91faea5b3a0c", "version": [0, 5, 0] }
   ]
 }
