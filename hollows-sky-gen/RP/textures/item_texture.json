@@ -1,0 +1,7 @@
+{
+  "resource_pack_name": "hollows_sky_gen",
+  "texture_name": "atlas.items",
+  "texture_data": {
+    "hsg_sky_menu": { "textures": "textures/items/sky_menu" }
+  }
+}
