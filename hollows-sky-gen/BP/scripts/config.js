@@ -3,10 +3,10 @@
 // Seconds a player waits after joining before being sent to their island.
 export const JOIN_DELAY_SECONDS = 10;
 
-// 1000 sky islands in a 32 x 32 grid, high above the overworld.
+// 350 sky islands in a 19 x 19 grid, high above the overworld.
 export const PLOTS = {
-  count: 1000,
-  perRow: 32,
+  count: 350,
+  perRow: 19,
   spacing: 256, // blocks between island centers
   baseX: 10000,
   baseZ: 10000,
