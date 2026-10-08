@@ -4,6 +4,7 @@ import { ActionFormData, FormCancelationReason } from "@minecraft/server-ui";
 import { GEN_LEVELS, GEN_SLOT_COST, GEN_SPOTS, PICKAXES, PLOTS, PVE, PVP_PRIZE, PVP_SHOP, RANKS, SELL_PRICES } from "./config.js";
 import { addMoney, allPlayers, getPlot, getStats, kdr, money, rankName, resetPlot, savePlot, saveStats, statsById, trySpend } from "./data.js";
 import { inMatch, joinQueue, leaveQueue, QUEUES, queueCount, queueOf } from "./pvp.js";
+import { friendsMenu } from "./friends.js";
 import { createLobby, inRun, joinLobby, leaveLobby, leaveRun, lobbyOf, openLobbies } from "./pve.js";
 import {
   buildHub,
@@ -44,6 +45,7 @@ export function skyMenu(player) {
   const stats = getStats(player);
   const buttons = [
     { text: "§2My Island", run: () => sendHome(player) },
+    { text: "§bFriends" + (stats.requests.length ? ` §c(${stats.requests.length} new)` : ""), run: () => friendsMenu(player) },
     { text: "§9Visit an Island", run: () => visitMenu(player) },
     { text: "§6Go to Hub", run: () => sendToHub(player) },
     { text: "§3My Stats", run: () => statsMenu(player, stats) },
@@ -56,6 +58,7 @@ export function skyMenu(player) {
 }
 
 function visitMenu(player) {
+  if (!isAdmin(player)) return friendIslandsMenu(player);
   const buttons = [];
   for (let start = 1; start <= PLOTS.count; start += 50) {
     const end = Math.min(start + 49, PLOTS.count);
@@ -64,6 +67,18 @@ function visitMenu(player) {
     if (taken) buttons.push({ text: `Islands ${start} - ${end}\n§8${taken} taken`, run: () => visitPage(player, start, end) });
   }
   menu(player, "Visit an Island", buttons.length ? "Pick a group. You can also type /plot <number>." : "No islands yet.", buttons);
+}
+
+/** Normal players can only visit their friends' islands. */
+function friendIslandsMenu(player) {
+  const buttons = getStats(player)
+    .friends.map((id) => statsById(id))
+    .filter((s) => s?.plot)
+    .map((s) => ({ text: `${s.name}\n§8Plot ${s.plot}`, run: () => sendToPlot(player, s.plot, false) }));
+  menu(player, "Visit an Island", buttons.length ? "You can visit your friends' islands." : "You can only visit friends' islands. Add friends in Sky Menu > Friends.", [
+    ...buttons,
+    { text: "Back", run: () => skyMenu(player) },
+  ]);
 }
 
 function visitPage(player, start, end) {
@@ -120,7 +135,9 @@ function playersMenu(player) {
       run: () => {
         const fresh = statsById(id) ?? stats;
         menu(player, fresh.name, statsText(fresh), [
-          ...(fresh.plot ? [{ text: "Visit their island", run: () => sendToPlot(player, fresh.plot, fresh.plot === getStats(player).plot) }] : []),
+          ...(fresh.plot && (fresh.friends.includes(player.id) || isAdmin(player))
+            ? [{ text: "Visit their island", run: () => sendToPlot(player, fresh.plot, fresh.plot === getStats(player).plot) }]
+            : []),
           { text: "Back", run: () => playersMenu(player) },
         ]);
       },
@@ -442,6 +459,7 @@ export function pvpBotMenu(player) {
     run: () => joinQueue(player, key),
   }));
   if (current) buttons.push({ text: "§cLeave the queue", run: () => (leaveQueue(player), player.sendMessage("§eYou left the queue.")) });
+  buttons.push({ text: `PvP Settings\n§8Fight against: ${PVP_MODES[stats.pvpMode]}`, run: () => pvpSettingsMenu(player) });
   buttons.push({ text: "Close", run: () => {} });
   menu(player, "§c§lPvP Bot", body, buttons);
 }
@@ -493,4 +511,29 @@ export function pveBotMenu(player) {
   if (mine) buttons.push({ text: "§cLeave this run", run: () => (leaveLobby(player), player.sendMessage("§eYou left the run.")) });
   buttons.push({ text: "Close", run: () => {} });
   menu(player, "§2§lPvE Bot", body, buttons);
+}
+
+// ---------- PvP Settings ----------
+
+const PVP_MODES = { all: "Anyone", friends: "Friends only", fof: "Friends + their friends" };
+
+function pvpSettingsMenu(player) {
+  const stats = getStats(player);
+  menu(
+    player,
+    "PvP Settings",
+    `Who can you be matched with in PvP?\nNow: §e${PVP_MODES[stats.pvpMode]}§r\n\n§lFriends only§r: only your friends.\n§lFriends + their friends§r: your friends, and their friends too.`,
+    [
+      ...Object.entries(PVP_MODES).map(([mode, label]) => ({
+        text: `${stats.pvpMode === mode ? "§2> " : ""}${label}`,
+        run: () => {
+          stats.pvpMode = mode;
+          saveStats(player);
+          player.sendMessage(`§aPvP: you'll be matched with ${label.toLowerCase()}.`);
+          pvpBotMenu(player);
+        },
+      })),
+      { text: "Back", run: () => pvpBotMenu(player) },
+    ]
+  );
 }

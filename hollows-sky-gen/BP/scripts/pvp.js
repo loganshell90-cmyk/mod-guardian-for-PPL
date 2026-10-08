@@ -1,7 +1,7 @@
 // PvP: queues, arenas, matches and ranked ratings.
 import { BlockVolume, EquipmentSlot, GameMode, Player, system, world } from "@minecraft/server";
 import { ARENAS, PVP_PRIZE, RANKED_RANGE, RATING_K } from "./config.js";
-import { addMoney, getStats, money, rankName, saveStats, saveStatsById, statsById, updateNameTag } from "./data.js";
+import { addMoney, canMatch, getStats, isFriend, money, rankName, saveStats, saveStatsById, statsById, updateNameTag } from "./data.js";
 import { addTravelBlocker, sendHome } from "./islands.js";
 
 const overworld = () => world.getDimension("overworld");
@@ -90,13 +90,11 @@ function matchmake() {
     while (waiting[key].length >= need) {
       const arena = arenas.find((a) => a.size === info.size && !busyArenas.has(a.id));
       if (!arena) break;
-      const group = info.ranked ? pickRanked(waiting[key], need) : waiting[key].slice(0, need);
+      const group = info.ranked ? pickRanked(waiting[key], need) : pickCasual(waiting[key], need);
       if (!group) break;
       waiting[key] = waiting[key].filter((e) => !group.includes(e));
       const ps = group.map((e) => players.get(e.id));
-      // Ranked 2v2: best + worst vs the two middle players, to keep teams even.
-      const teams = info.size === 1 ? [[ps[0]], [ps[1]]] : info.ranked ? [[ps[0], ps[3]], [ps[1], ps[2]]] : [ps.slice(0, 2), ps.slice(2)];
-      startMatch(arena, key, teams);
+      startMatch(arena, key, info.size === 1 ? [[ps[0]], [ps[1]]] : splitTeams(ps, info.ranked));
     }
 
     for (const e of waiting[key]) {
@@ -108,17 +106,52 @@ function matchmake() {
   }
 }
 
-/** Finds players with close ratings. The allowed gap grows the longer people wait. */
+/**
+ * Builds a group of `need` players starting from list[start], skipping anyone
+ * whose PvP setting (friends only, etc.) doesn't allow them with the others.
+ */
+function buildGroup(list, start, need) {
+  const group = [list[start]];
+  for (let j = start + 1; j < list.length && group.length < need; j++) {
+    if (group.every((e) => canMatch(e.id, list[j].id))) group.push(list[j]);
+  }
+  return group.length === need ? group : undefined;
+}
+
+/** Casual: whoever has waited longest, as long as everyone's PvP settings allow it. */
+function pickCasual(list, need) {
+  for (let i = 0; i + need <= list.length; i++) {
+    const group = buildGroup(list, i, need);
+    if (group) return group;
+  }
+  return undefined;
+}
+
+/** Ranked: players with close ratings. The allowed gap grows the longer people wait. */
 function pickRanked(list, need) {
   const sorted = [...list].sort((a, b) => statsById(a.id).rating - statsById(b.id).rating);
   for (let i = 0; i + need <= sorted.length; i++) {
-    const group = sorted.slice(i, i + need);
+    const group = buildGroup(sorted, i, need);
+    if (!group) continue;
     const longest = Math.max(...group.map((e) => system.currentTick - e.since)) / 20;
     const allowed = RANKED_RANGE.start + RANKED_RANGE.growPer10s * Math.floor(longest / 10);
     const gap = statsById(group[need - 1].id).rating - statsById(group[0].id).rating;
     if (gap <= allowed) return group.reverse(); // highest rating first
   }
   return undefined;
+}
+
+/**
+ * 2v2 teams. Friends go on the same team when possible. Otherwise ranked puts
+ * best + worst vs the two middle players to keep it even.
+ */
+function splitTeams(ps, ranked) {
+  const options = ranked
+    ? [[[0, 3], [1, 2]], [[0, 2], [1, 3]], [[0, 1], [2, 3]]]
+    : [[[0, 1], [2, 3]], [[0, 2], [1, 3]], [[0, 3], [1, 2]]];
+  const friendPairs = (split) => split.filter(([a, b]) => isFriend(ps[a].id, ps[b].id)).length;
+  const best = options.reduce((a, b) => (friendPairs(b) > friendPairs(a) ? b : a));
+  return best.map(([a, b]) => [ps[a], ps[b]]);
 }
 
 // ---------- Matches ----------

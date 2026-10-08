@@ -1,6 +1,6 @@
 // Saved data. Everything is stored in the world itself, so it survives restarts.
 import { world } from "@minecraft/server";
-import { PLOTS, RANKS, START_RATING } from "./config.js";
+import { FIRST_HUNDRED_BONUS, PLOTS, RANKS, START_RATING } from "./config.js";
 
 // ---------- Player stats and money ----------
 
@@ -23,6 +23,10 @@ function newStats(name) {
     losses: 0,
     bestWave: 0,
     pveRuns: 0,
+    friends: [], // player ids
+    requests: [], // ids of players who sent this player a friend request
+    pvpMode: "all", // who you can be matched against: "all", "friends" or "fof" (friends of friends)
+    gotBonus: false, // has had the first $100 bonus
   };
 }
 
@@ -89,9 +93,27 @@ export function allPlayers() {
 }
 
 export function addMoney(player, amount) {
-  const stats = getStats(player);
+  getStats(player);
+  addMoneyById(player.id, amount);
+}
+
+/** Adds money to any player, online or not. Also pays the first $100 bonus. */
+export function addMoneyById(id, amount) {
+  const stats = statsById(id);
+  if (!stats) return;
   stats.money = Math.max(0, stats.money + Math.floor(amount));
-  saveStats(player);
+  let bonus = false;
+  if (!stats.gotBonus && stats.money >= 100) {
+    stats.gotBonus = true;
+    stats.money += FIRST_HUNDRED_BONUS;
+    bonus = true;
+  }
+  saveStatsById(id);
+  const player = bonus && world.getAllPlayers().find((p) => p.id === id);
+  if (player) {
+    player.sendMessage(`§6§lYour first $100! §r§eHere's ${money(FIRST_HUNDRED_BONUS)} extra. That's enough for the Cobblestone generator at the Upgrade Bot!`);
+    player.playSound("random.levelup");
+  }
 }
 
 /** Takes money if the player has enough. Returns true if it worked. */
@@ -210,4 +232,23 @@ export function rankName(stats) {
 export function updateNameTag(player) {
   const stats = getStats(player);
   player.nameTag = `§8[${rankName(stats)}§8] §f${player.name}`;
+}
+
+// ---------- Friends ----------
+
+export function isFriend(aId, bId) {
+  return statsById(aId)?.friends.includes(bId) ?? false;
+}
+
+/** Can player a be matched against player b, going by a's PvP setting? */
+function allows(aId, bId) {
+  const a = statsById(aId);
+  if (!a || a.pvpMode === "all") return true;
+  if (a.friends.includes(bId)) return true;
+  return a.pvpMode === "fof" && a.friends.some((f) => isFriend(f, bId));
+}
+
+/** True if both players' PvP settings let them be in a match together. */
+export function canMatch(aId, bId) {
+  return allows(aId, bId) && allows(bId, aId);
 }

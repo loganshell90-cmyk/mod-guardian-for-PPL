@@ -1,7 +1,7 @@
 // Building islands, generators, teleporting, bots and floating leaderboards.
 import { system, world, GameMode } from "@minecraft/server";
 import { GEN_LEVELS, GEN_SPOTS, HUB_BOTS, HUB_DEFAULT, HUB_RADIUS, PLOTS } from "./config.js";
-import { firstFreePlot, getHub, getPlot, getStats, plotAt, plotCenter, resetPlot, savePlot, saveStats, saveStatsById, statsById } from "./data.js";
+import { firstFreePlot, getHub, getPlot, getStats, isFriend, plotAt, plotCenter, resetPlot, savePlot, saveStats, saveStatsById, statsById } from "./data.js";
 
 const overworld = () => world.getDimension("overworld");
 
@@ -104,9 +104,16 @@ export function addTravelBlocker(fn) {
 }
 const travelBlocker = (player) => travelBlockers.map((fn) => fn(player)).find(Boolean) ?? "";
 
+/** You can visit your own island, your friends' islands, and any island if you're an admin. */
+export function canVisit(player, n) {
+  const owner = getPlot(n).owner;
+  return owner === player.id || player.hasTag("hsg_admin") || isFriend(owner, player.id);
+}
+
 export function sendToPlot(player, n, isOwner) {
   const blocked = travelBlocker(player);
   if (blocked) return player.sendMessage(blocked);
+  if (!canVisit(player, n)) return player.sendMessage("§cYou can only visit your friends' islands. Add them in Sky Menu > Friends.");
   const c = plotCenter(n);
   const spawn = { x: c.x + 0.5, y: c.y + 1, z: c.z + 0.5 };
   player.addEffect("slow_falling", 400, { showParticles: false });
@@ -270,7 +277,8 @@ export function startFallCatcher() {
       const n = plotAt(l);
       if (n && l.y < plotCenter(n).y - 25) {
         const own = getStats(player).plot === n;
-        sendToPlot(player, n, own);
+        if (canVisit(player, n)) sendToPlot(player, n, own);
+        else sendHome(player);
       }
     }
   }, 40);

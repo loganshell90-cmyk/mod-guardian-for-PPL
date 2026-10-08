@@ -18,6 +18,8 @@ How it plays
   kept loaded (a ticking area called hsg_hub), so if a bot goes missing it
   comes back by itself within about 10 seconds, even when nobody is there.
   An admin can rebuild the hub somewhere else from Admin Tools.
+* New players get a $100 welcome gift. The first time anyone has $100 they get
+  $50 extra, which is enough for the Cobblestone generator ($150).
 * Every player who joins gets the next free plot (1 to 350). After a 10 second
   countdown they're sent to their island, which is built the first time.
 * Mine the generators (the blocks sitting on bedrock). They grow back.
@@ -25,6 +27,15 @@ How it plays
   on better pickaxes, better generators and more generators.
 * Fall off your island and you're put back on it.
 * Other players can't break or place blocks on your island.
+
+Friends and gifts
+-----------------
+* Sky Menu > Friends: My Friends, Friend Requests and Add a Friend (type a name
+  or tap someone online).
+* You can only visit your own island and your friends' islands (admins can
+  visit any).
+* Tap a friend to go to their island, see their stats, gift money, gift items
+  (they must be online) or unfriend them.
 
 PvP
 ---
@@ -39,6 +50,9 @@ PvP
   Falling out of the arena or leaving the game also knocks you out.
 * Winners get money. Afterwards everyone goes back where they were.
 * The PvP Shop sells golden apples, pearls, armor, swords, totems and more.
+* PvP Settings (in the PvP Bot) choose who you can be matched with: Anyone,
+  Friends only, or Friends + their friends. In 2v2, friends are put on the
+  same team when possible.
 
 PvE
 ---
@@ -59,7 +73,7 @@ PvE
 Commands
 --------
   /plot          go to your island
-  /plot 5        visit island 5
+  /plot 5        visit island 5 (if it's a friend's)
   /hub           go to the hub
   /leave         leave a PvE run or a PvP queue
   /skymenu       open the Sky Menu (if you lost the item)

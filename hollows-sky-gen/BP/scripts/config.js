@@ -213,3 +213,10 @@ export const PVE_BOSS_LOOT = [
   "minecraft:enchanted_golden_apple",
   "minecraft:diamond_chestplate",
 ];
+
+// ---------- Starting money ----------
+
+export const WELCOME_GIFT = 100; // money every new player gets
+// The first time a player has $100, they get this bonus. $100 + $50 = enough for
+// the Cobblestone generator ($150).
+export const FIRST_HUNDRED_BONUS = 50;

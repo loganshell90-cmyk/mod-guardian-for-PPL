@@ -8,8 +8,9 @@ import {
   system,
   world,
 } from "@minecraft/server";
-import { JOIN_DELAY_SECONDS, PLOTS } from "./config.js";
-import { firstFreePlot, getHub, getPlot, getStats, isNewPlayer, loadPlots, plotAt, saveStats, updateNameTag } from "./data.js";
+import { JOIN_DELAY_SECONDS, PLOTS, WELCOME_GIFT } from "./config.js";
+import { remindRequests } from "./friends.js";
+import { addMoney, firstFreePlot, getHub, getPlot, getStats, isNewPlayer, loadPlots, money, plotAt, saveStats, updateNameTag } from "./data.js";
 import { claimPlot, plotForGenerator, rebuildGenIndex, regenerate, sendHome, sendToHub, sendToPlot, startFallCatcher } from "./islands.js";
 import { startLeaderboards } from "./leaderboard.js";
 import { giveItem, isAdmin, makePickaxe, moneyBotMenu, pveBotMenu, pvpBotMenu, pvpShopMenu, skyMenu, upgradeBotMenu } from "./menus.js";
@@ -104,7 +105,11 @@ world.afterEvents.playerSpawn.subscribe(({ player, initialSpawn }) => {
   if (firstTime) {
     giveItem(player, new ItemStack("hsg:sky_menu"));
     giveItem(player, makePickaxe(0));
+    player.sendMessage(`§6§lWelcome to Hollow's Sky Gen! §r§eHere's ${money(WELCOME_GIFT)} to get you started.`);
   }
+  // New players get the welcome gift. Adding $0 still checks the first $100 bonus for older players.
+  addMoney(player, firstTime ? WELCOME_GIFT : 0);
+  remindRequests(player);
 
   if (!stats.plot) {
     const n = firstFreePlot();
