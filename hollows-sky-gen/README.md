@@ -13,10 +13,11 @@ Install
 How it plays
 ------------
 * The first person to ever join the world becomes the admin.
-* The hub builds itself the first time anyone goes there (/hub), with the
-  Money Bot, Upgrade Bot, PvP Bot, PvP Shop, PvE Bot and a leaderboard. If a bot goes
-  missing, it comes back by itself within about 10 seconds while someone is
-  near the hub. An admin can rebuild the hub somewhere else from Admin Tools.
+* The hub builds itself as soon as the world starts, with the Money Bot,
+  Upgrade Bot, PvP Bot, PvP Shop, PvE Bot and a leaderboard. The hub area is
+  kept loaded (a ticking area called hsg_hub), so if a bot goes missing it
+  comes back by itself within about 10 seconds, even when nobody is there.
+  An admin can rebuild the hub somewhere else from Admin Tools.
 * Every player who joins gets the next free plot (1 to 350). After a 10 second
   countdown they're sent to their island, which is built the first time.
 * Mine the generators (the blocks sitting on bedrock). They grow back.

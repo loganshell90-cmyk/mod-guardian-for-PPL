@@ -4,15 +4,15 @@
     "name": "Hollow's Sky Gen",
     "description": "Sky island plots, generators, money, upgrades, PvP and PvE.",
     "uuid": "4e11e74b-ccc2-4cb8-97ed-91faea5b3a0c",
-    "version": [0, 8, 0],
+    "version": [0, 9, 0],
     "min_engine_version": [1, 21, 90]
   },
   "modules": [
-    { "type": "data", "uuid": "3ad4fa28-ccad-4a59-9788-0d6be4f75ce7", "version": [0, 8, 0] },
-    { "type": "script", "language": "javascript", "uuid": "56c4bce8-2136-4eac-afa0-dd74d439f9d4", "version": [0, 8, 0], "entry": "scripts/main.js" }
+    { "type": "data", "uuid": "3ad4fa28-ccad-4a59-9788-0d6be4f75ce7", "version": [0, 9, 0] },
+    { "type": "script", "language": "javascript", "uuid": "56c4bce8-2136-4eac-afa0-dd74d439f9d4", "version": [0, 9, 0], "entry": "scripts/main.js" }
   ],
   "dependencies": [
-    { "uuid": "769106ab-81fd-42c1-9084-2ae051a5f103", "version": [0, 8, 0] },
+    { "uuid": "769106ab-81fd-42c1-9084-2ae051a5f103", "version": [0, 9, 0] },
     { "module_name": "@minecraft/server", "version": "2.10.0" },
     { "module_name": "@minecraft/server-ui", "version": "2.2.0" }
   ]

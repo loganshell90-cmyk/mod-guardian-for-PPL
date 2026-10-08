@@ -190,6 +190,26 @@ export function buildHub(player) {
 function buildHubAt(c) {
   buildIsland(c, HUB_RADIUS);
   world.setDynamicProperty("hsg:hub", JSON.stringify(c));
+  keepHubLoaded();
+}
+
+/**
+ * Keeps the hub area loaded all the time (a "ticking area"), so the hub can be
+ * built and its bots can respawn even when nobody is standing there.
+ */
+function keepHubLoaded() {
+  const hub = getHub() ?? HUB_DEFAULT;
+  const dim = overworld();
+  try {
+    dim.runCommand("tickingarea remove hsg_hub");
+  } catch {
+    // Wasn't there yet.
+  }
+  try {
+    dim.runCommand(`tickingarea add circle ${hub.x} ${hub.y} ${hub.z} 2 hsg_hub true`);
+  } catch (e) {
+    console.warn(`[Hollow's Sky Gen] couldn't keep the hub loaded: ${e}`);
+  }
 }
 
 /**
@@ -223,12 +243,16 @@ export function spawnBot(role, location) {
 
 /** Every 2 seconds: catch anyone falling off an island and put them back. */
 export function startFallCatcher() {
-  // Every 10 seconds: bring back any hub bot that went missing.
+  // Every 10 seconds: build the hub if it isn't there yet, and bring back any
+  // bot that went missing. The hub area is kept loaded so this works even when
+  // nobody is near it.
+  keepHubLoaded();
   system.runInterval(() => {
     try {
+      if (!getHub() && overworld().getBlock(HUB_DEFAULT)) buildHubAt(HUB_DEFAULT);
       ensureHubBots();
     } catch {
-      // Hub not loaded right now.
+      // Hub area still loading.
     }
   }, 200);
 
