@@ -298,9 +298,25 @@ function adminMenu(player) {
     { text: "Move a plot to here", run: () => movePlotMenu(player) },
     { text: "Put a player on a different plot", run: () => setPlotMenu(player) },
     { text: "Free up a plot", run: () => freePlotMenu(player) },
+    { text: "§9Spawn a blue axolotl", run: () => spawnBlueAxolotl(player) },
     { text: "Give me $1,000\n§8For testing", run: () => addMoney(player, 1000) },
     { text: "Back", run: () => skyMenu(player) },
   ]);
+}
+
+/**
+ * Blue is the rare axolotl. Minecraft only makes it for babies born without a
+ * color, so spawn it as a newborn and then grow it up.
+ */
+function spawnBlueAxolotl(player) {
+  const axolotl = player.dimension.spawnEntity("minecraft:axolotl", player.location, {
+    spawnEvent: "minecraft:entity_born",
+    initialPersistence: true,
+  });
+  system.runTimeout(() => {
+    if (axolotl.isValid) axolotl.triggerEvent("minecraft:ageable_grow_up");
+  }, 2);
+  player.sendMessage("§9Blue axolotl spawned! Put it in water, or it dries out on land.");
 }
 
 function removeNearestBot(player) {

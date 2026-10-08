@@ -69,3 +69,4 @@ Admin Tools (in the Sky Menu) can also:
   If that plot is taken, the two players swap. If the moved player had no plot,
   the old owner moves to the next free plot instead.
 * Move a plot's island to where you're standing, or free up a plot.
+* Spawn a blue axolotl (the rare one) where you're standing.
