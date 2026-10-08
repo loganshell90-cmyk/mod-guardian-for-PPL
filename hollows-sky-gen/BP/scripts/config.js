@@ -20,7 +20,7 @@ export const HUB_RADIUS = 12;
 // (An admin can still rebuild it somewhere else from Admin Tools.)
 export const HUB_DEFAULT = { x: 9500, y: 180, z: 9500 };
 // Where each bot stands on the hub (x, z from the center). Missing bots come back by themselves.
-export const HUB_BOTS = { money: [-4, -6], upgrade: [4, -6], pvp: [-4, 6], shop: [4, 6] };
+export const HUB_BOTS = { money: [-4, -6], upgrade: [4, -6], pvp: [-4, 6], shop: [4, 6], pve: [0, 8] };
 
 // Generator levels. Every generator on an island uses the island's level.
 // delay = ticks before the block comes back (20 ticks = 1 second).
@@ -134,4 +134,82 @@ export const PVP_SHOP = [
   },
   { name: "Totem of Undying", cost: 3000, items: [["minecraft:totem_of_undying", 1]] },
   { name: "Enchanted Golden Apple", cost: 2500, items: [["minecraft:enchanted_golden_apple", 1]] },
+];
+
+// ---------- PvE (Part 3) ----------
+
+export const PVE = {
+  arenas: { baseX: -10000, baseZ: -9400, y: 160, spacing: 200, count: 3, radius: 18 },
+  maxPlayers: 4,
+  lobbySeconds: 15, // time for friends to join before a run starts
+  breakSeconds: 6, // rest between waves
+  moneyPerWave: 20, // everyone in the run gets wave x this when a wave is cleared
+  bossEvery: 5, // every 5th wave has a boss
+  bossBonus: 150, // extra money for a boss wave, times (wave / 5)
+};
+
+// Mobs that can show up, and the first wave they appear on. Hostile mobs only.
+export const PVE_MOBS = [
+  { type: "minecraft:zombie", from: 1 },
+  { type: "minecraft:skeleton", from: 1 },
+  { type: "minecraft:spider", from: 1 },
+  { type: "minecraft:husk", from: 3 },
+  { type: "minecraft:stray", from: 3 },
+  { type: "minecraft:creeper", from: 4 },
+  { type: "minecraft:witch", from: 6 },
+  { type: "minecraft:pillager", from: 6 },
+  { type: "minecraft:vindicator", from: 9 },
+  { type: "minecraft:wither_skeleton", from: 11 },
+];
+
+// Bosses take turns: wave 5, 10, 15, 20, then round again.
+export const PVE_BOSSES = [
+  { type: "minecraft:zombie", name: "Zombie King" },
+  { type: "minecraft:ravager", name: "Ravager Beast" },
+  { type: "minecraft:evoker", name: "Evoker Lord" },
+  { type: "minecraft:wither_skeleton", name: "Bone Tyrant" },
+];
+
+// Mob armor by wave. Later waves get better armor.
+export const PVE_ARMOR = [
+  { from: 4, set: "chainmail" },
+  { from: 8, set: "iron" },
+  { from: 15, set: "diamond" },
+  { from: 25, set: "netherite" },
+];
+
+// Loot any PvE mob can drop. chance is per kill (0.05 = 5%). from = first wave it can drop.
+export const PVE_LOOT = [
+  { item: "minecraft:iron_ingot", min: 1, max: 3, chance: 0.25, from: 1 },
+  { item: "minecraft:gold_ingot", min: 1, max: 2, chance: 0.15, from: 1 },
+  { item: "minecraft:arrow", min: 4, max: 8, chance: 0.15, from: 1 },
+  { item: "minecraft:emerald", min: 1, max: 3, chance: 0.08, from: 3 },
+  { item: "minecraft:golden_apple", min: 1, max: 1, chance: 0.04, from: 3 },
+  { item: "minecraft:diamond", min: 1, max: 2, chance: 0.04, from: 5 },
+  { item: "minecraft:ender_pearl", min: 1, max: 2, chance: 0.05, from: 5 },
+  { item: "minecraft:netherite_scrap", min: 1, max: 1, chance: 0.01, from: 10 },
+  { item: "minecraft:totem_of_undying", min: 1, max: 1, chance: 0.005, from: 12 },
+  { item: "minecraft:enchanted_golden_apple", min: 1, max: 1, chance: 0.003, from: 15 },
+];
+
+// Special drops for one kind of mob.
+export const PVE_SPECIAL_LOOT = [
+  { mob: "minecraft:zombie", item: "minecraft:iron_sword", chance: 0.05, from: 1 },
+  { mob: "minecraft:zombie", item: "minecraft:netherite_sword", chance: 0.005, from: 8 },
+  { mob: "minecraft:skeleton", item: "minecraft:bow", chance: 0.05, from: 1 },
+  { mob: "minecraft:spider", item: "minecraft:web", chance: 0.1, from: 1 },
+  { mob: "minecraft:creeper", item: "minecraft:tnt", chance: 0.08, from: 4 },
+  { mob: "minecraft:witch", item: "minecraft:experience_bottle", chance: 0.25, from: 6 },
+  { mob: "minecraft:pillager", item: "minecraft:crossbow", chance: 0.05, from: 6 },
+  { mob: "minecraft:vindicator", item: "minecraft:diamond_axe", chance: 0.05, from: 9 },
+  { mob: "minecraft:wither_skeleton", item: "minecraft:wither_skeleton_skull", chance: 0.05, from: 11 },
+];
+
+// A boss always drops 3 diamonds plus one of these.
+export const PVE_BOSS_LOOT = [
+  "minecraft:netherite_sword",
+  "minecraft:netherite_ingot",
+  "minecraft:totem_of_undying",
+  "minecraft:enchanted_golden_apple",
+  "minecraft:diamond_chestplate",
 ];

@@ -2,7 +2,7 @@
 import { BlockVolume, EquipmentSlot, GameMode, Player, system, world } from "@minecraft/server";
 import { ARENAS, PVP_PRIZE, RANKED_RANGE, RATING_K } from "./config.js";
 import { addMoney, getStats, money, rankName, saveStats, saveStatsById, statsById, updateNameTag } from "./data.js";
-import { sendHome, setTravelBlocker } from "./islands.js";
+import { addTravelBlocker, sendHome } from "./islands.js";
 
 const overworld = () => world.getDimension("overworld");
 
@@ -315,7 +315,7 @@ function holdingTotem(player) {
 
 export function startPvp() {
   // Can't use /plot or /hub to run away from a match.
-  setTravelBlocker((player) => (playerMatch.get(player.id)?.ended === false ? "§cFinish your match first." : ""));
+  addTravelBlocker((player) => (playerMatch.get(player.id)?.ended === false ? "§cFinish your match first." : ""));
 
   // Arena hits: no friendly fire, no outsiders, and a killing hit eliminates
   // instead of killing, so nobody drops their stuff.

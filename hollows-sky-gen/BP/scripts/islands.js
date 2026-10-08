@@ -97,11 +97,12 @@ export function preparePlot(n) {
  * Teleports a player to an island. Slow falling keeps them safe while the
  * area loads; then the island is built and they're moved onto it.
  */
-// PvP sets this so players can't teleport out of a match. Returns a message, or "" if allowed.
-let travelBlocker = (_player) => "";
-export function setTravelBlocker(fn) {
-  travelBlocker = fn;
+// PvP and PvE add these so players can't teleport out of a fight. Each returns a message, or "" if allowed.
+const travelBlockers = [];
+export function addTravelBlocker(fn) {
+  travelBlockers.push(fn);
 }
+const travelBlocker = (player) => travelBlockers.map((fn) => fn(player)).find(Boolean) ?? "";
 
 export function sendToPlot(player, n, isOwner) {
   const blocked = travelBlocker(player);
@@ -211,6 +212,7 @@ export const BOT_NAMES = {
   upgrade: "§b§lUpgrade Bot\n§r§7Pickaxes & generators",
   pvp: "§c§lPvP Bot\n§r§7Casual & Ranked matches",
   shop: "§d§lPvP Shop\n§r§7Gear for fighting",
+  pve: "§2§lPvE Bot\n§r§7Fight waves of mobs",
 };
 
 export function spawnBot(role, location) {

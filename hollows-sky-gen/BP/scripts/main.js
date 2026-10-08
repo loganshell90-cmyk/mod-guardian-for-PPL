@@ -12,8 +12,9 @@ import { JOIN_DELAY_SECONDS, PLOTS } from "./config.js";
 import { firstFreePlot, getHub, getPlot, getStats, isNewPlayer, loadPlots, plotAt, saveStats, updateNameTag } from "./data.js";
 import { claimPlot, plotForGenerator, rebuildGenIndex, regenerate, sendHome, sendToHub, sendToPlot, startFallCatcher } from "./islands.js";
 import { startLeaderboards } from "./leaderboard.js";
-import { giveItem, isAdmin, makePickaxe, moneyBotMenu, pvpBotMenu, pvpShopMenu, skyMenu, upgradeBotMenu } from "./menus.js";
-import { arenaAt, needsReturn, returnPlayer, startPvp } from "./pvp.js";
+import { giveItem, isAdmin, makePickaxe, moneyBotMenu, pveBotMenu, pvpBotMenu, pvpShopMenu, skyMenu, upgradeBotMenu } from "./menus.js";
+import { leaveRun, pveArenaAt, startPve } from "./pve.js";
+import { arenaAt, leaveQueue, needsReturn, queueOf, returnPlayer, startPvp } from "./pvp.js";
 
 // ---------- Slash commands: /plot, /hub, /skymenu ----------
 
@@ -47,6 +48,17 @@ system.beforeEvents.startup.subscribe(({ customCommandRegistry }) => {
     (player) => sendToHub(player)
   );
   reg(
+    { name: "hsg:leave", description: "Leave a PvE run or a PvP queue.", permissionLevel: CommandPermissionLevel.Any, cheatsRequired: false },
+    (player) => {
+      if (leaveRun(player)) return;
+      if (queueOf(player)) {
+        leaveQueue(player);
+        return player.sendMessage("§eYou left the PvP queue.");
+      }
+      player.sendMessage("§7You're not in a run or a queue.");
+    }
+  );
+  reg(
     { name: "hsg:skymenu", description: "Open the Sky Menu.", permissionLevel: CommandPermissionLevel.Any, cheatsRequired: false },
     (player) => skyMenu(player)
   );
@@ -60,6 +72,7 @@ world.afterEvents.worldLoad.subscribe(() => {
   startFallCatcher();
   startLeaderboards();
   startPvp();
+  startPve();
 
   // Time played: +1 minute for everyone online.
   system.runInterval(() => {
@@ -138,7 +151,7 @@ function isProtected(player, location) {
   if (isAdmin(player)) return false;
   const hub = getHub();
   if (hub && Math.abs(location.x - hub.x) <= 30 && Math.abs(location.z - hub.z) <= 30) return true;
-  if (arenaAt(location)) return true;
+  if (arenaAt(location) || pveArenaAt(location)) return true;
   const n = plotAt(location);
   return n !== 0 && getPlot(n).owner !== player.id;
 }
@@ -185,4 +198,5 @@ world.afterEvents.playerInteractWithEntity.subscribe(({ player, target }) => {
   else if (role === "upgrade") upgradeBotMenu(player);
   else if (role === "pvp") pvpBotMenu(player);
   else if (role === "shop") pvpShopMenu(player);
+  else if (role === "pve") pveBotMenu(player);
 });

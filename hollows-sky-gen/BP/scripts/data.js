@@ -21,6 +21,8 @@ function newStats(name) {
     rankedGames: 0,
     wins: 0,
     losses: 0,
+    bestWave: 0,
+    pveRuns: 0,
   };
 }
 

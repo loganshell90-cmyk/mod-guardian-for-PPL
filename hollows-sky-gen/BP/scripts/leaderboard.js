@@ -15,6 +15,7 @@ export const BOARDS = [
   { id: "kills", title: "Top Kills", value: (s) => s.kills, show: (s) => `${s.kills}` },
   { id: "kdr", title: "Top K/D Ratio", value: (s) => kdr(s), show: (s) => kdr(s).toFixed(2) },
   { id: "deaths", title: "Most Deaths", value: (s) => s.deaths, show: (s) => `${s.deaths}` },
+  { id: "wave", title: "Highest PvE Wave", value: (s) => s.bestWave, show: (s) => `Wave ${s.bestWave}` },
   { id: "mobs", title: "Top Mob Kills", value: (s) => s.mobs, show: (s) => `${s.mobs}` },
   { id: "mined", title: "Top Blocks Mined", value: (s) => s.mined, show: (s) => `${s.mined}` },
   { id: "minutes", title: "Top Time Played", value: (s) => s.minutes, show: (s) => timePlayed(s.minutes) },

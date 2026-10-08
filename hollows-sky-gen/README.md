@@ -2,7 +2,7 @@ Hollow's Sky Gen
 ================
 
 A Minecraft Bedrock add-on: 350 sky islands, generators, money, upgrades,
-stats, leaderboards and PvP. PvE (Part 3) comes later.
+stats, leaderboards, PvP and PvE.
 
 Install
 -------
@@ -14,7 +14,7 @@ How it plays
 ------------
 * The first person to ever join the world becomes the admin.
 * The hub builds itself the first time anyone goes there (/hub), with the
-  Money Bot, Upgrade Bot, PvP Bot, PvP Shop and a leaderboard. If a bot goes
+  Money Bot, Upgrade Bot, PvP Bot, PvP Shop, PvE Bot and a leaderboard. If a bot goes
   missing, it comes back by itself within about 10 seconds while someone is
   near the hub. An admin can rebuild the hub somewhere else from Admin Tools.
 * Every player who joins gets the next free plot (1 to 350). After a 10 second
@@ -39,19 +39,36 @@ PvP
 * Winners get money. Afterwards everyone goes back where they were.
 * The PvP Shop sells golden apples, pearls, armor, swords, totems and more.
 
+PvE
+---
+* Talk to the PvE Bot at the hub and start a run. Friends have 15 seconds to
+  join from the PvE Bot (up to 4 players).
+* Waves of hostile mobs get stronger every wave: more health, more damage,
+  speed, and armor (chainmail, then iron, diamond and netherite).
+* Every 5th wave is a boss wave (Zombie King, Ravager Beast, Evoker Lord,
+  Bone Tyrant). Bosses always drop diamonds plus a rare item.
+* Mobs drop special loot, rarer the higher the wave (a zombie can drop a
+  netherite sword from wave 8).
+* Clearing a wave pays everyone in the run money.
+* Knocked out? You keep your items, watch as a spectator, and come back next
+  wave if your team clears it. The run ends when everyone is knocked out.
+* Leave early with /leave or the Sky Menu.
+* Creepers can't blow holes in the arenas.
+
 Commands
 --------
   /plot          go to your island
   /plot 5        visit island 5
   /hub           go to the hub
+  /leave         leave a PvE run or a PvP queue
   /skymenu       open the Sky Menu (if you lost the item)
-If a command isn't found, add the prefix: /hsg:plot, /hsg:hub, /hsg:skymenu.
+If a command isn't found, add the prefix: /hsg:plot, /hsg:hub, /hsg:leave, /hsg:skymenu.
 
 Leaderboards
 ------------
 The side of the screen and a floating board on every island cycle through the
-top 10 for: money, ranked rating, PvP wins, kills, K/D ratio, deaths, mob kills,
-blocks mined and time played.
+top 10 for: money, ranked rating, PvP wins, kills, K/D ratio, deaths, highest
+PvE wave, mob kills, blocks mined and time played.
 The Sky Menu has the same boards, your own stats, and everyone else's stats.
 
 Changing prices and settings

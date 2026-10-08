@@ -1,9 +1,10 @@
 // All the pop-up screens: Sky Menu, Money Bot, Upgrade Bot, stats and admin tools.
 import { EnchantmentTypes, ItemStack, system, world } from "@minecraft/server";
 import { ActionFormData, FormCancelationReason } from "@minecraft/server-ui";
-import { GEN_LEVELS, GEN_SLOT_COST, GEN_SPOTS, PICKAXES, PLOTS, PVP_PRIZE, PVP_SHOP, RANKS, SELL_PRICES } from "./config.js";
+import { GEN_LEVELS, GEN_SLOT_COST, GEN_SPOTS, PICKAXES, PLOTS, PVE, PVP_PRIZE, PVP_SHOP, RANKS, SELL_PRICES } from "./config.js";
 import { addMoney, allPlayers, getPlot, getStats, kdr, money, rankName, resetPlot, savePlot, saveStats, statsById, trySpend } from "./data.js";
 import { inMatch, joinQueue, leaveQueue, QUEUES, queueCount, queueOf } from "./pvp.js";
+import { createLobby, inRun, joinLobby, leaveLobby, leaveRun, lobbyOf, openLobbies } from "./pve.js";
 import {
   buildHub,
   movePlayerToPlot,
@@ -49,6 +50,7 @@ export function skyMenu(player) {
     { text: "§5Leaderboards", run: () => leaderboardMenu(player) },
     { text: "§8Look at Players", run: () => playersMenu(player) },
   ];
+  if (inRun(player)) buttons.unshift({ text: "§cLeave PvE run", run: () => leaveRun(player) });
   if (isAdmin(player)) buttons.push({ text: "§cAdmin Tools", run: () => adminMenu(player) });
   menu(player, "§l§bHollow's Sky Gen", `Money: §a${money(stats.money)}§r\nIsland: §e${stats.plot ? "Plot " + stats.plot : "none"}`, buttons);
 }
@@ -83,6 +85,7 @@ export function statsText(stats) {
     `§rK/D Ratio: §e${kdr(stats).toFixed(2)}`,
     `§rRank: ${rankName(stats)} §7(${stats.rating} rating, ${stats.rankedGames} ranked games)`,
     `§rPvP Wins: §a${stats.wins} §r Losses: §c${stats.losses}`,
+    `§rHighest PvE Wave: §2${stats.bestWave} §r(${stats.pveRuns} runs)`,
     `§rMobs Killed: §2${stats.mobs}`,
     `§rBlocks Mined: §6${stats.mined}`,
     `§rTime Played: §b${timePlayed(stats.minutes)}`,
@@ -294,6 +297,7 @@ function adminMenu(player) {
     { text: "Spawn Upgrade Bot here", run: () => spawnBot("upgrade", player.location) },
     { text: "Spawn PvP Bot here", run: () => spawnBot("pvp", player.location) },
     { text: "Spawn PvP Shop here", run: () => spawnBot("shop", player.location) },
+    { text: "Spawn PvE Bot here", run: () => spawnBot("pve", player.location) },
     { text: "Remove nearest bot\n§8Hub bots come back by themselves", run: () => removeNearestBot(player) },
     { text: "Move a plot to here", run: () => movePlotMenu(player) },
     { text: "Put a player on a different plot", run: () => setPlotMenu(player) },
@@ -464,4 +468,29 @@ export function pvpShopMenu(player) {
       { text: "Close", run: () => {} },
     ]
   );
+}
+
+// ---------- PvE Bot ----------
+
+export function pveBotMenu(player) {
+  if (inMatch(player) || inRun(player)) return player.sendMessage("§cYou're already in a fight.");
+  const stats = getStats(player);
+  const mine = lobbyOf(player);
+  const body = [
+    `Your highest wave: §2${stats.bestWave}`,
+    "",
+    "Fight waves of hostile mobs that get stronger every wave: more health, more damage, and armor.",
+    `Every ${PVE.bossEvery}th wave has a boss. Mobs drop special loot, and you earn money for every wave you clear.`,
+    "",
+    `Up to ${PVE.maxPlayers} players. If you get knocked out you keep your items, and you're back next wave if your team survives.`,
+  ].join("\n");
+  const buttons = [];
+  if (!mine) buttons.push({ text: "§2Start a new run\n§8Friends can join for " + PVE.lobbySeconds + " seconds", run: () => createLobby(player) });
+  for (const lobby of openLobbies()) {
+    if (lobby === mine) continue;
+    buttons.push({ text: `Join ${lobby.leader}'s run\n§8${lobby.members.length}/${PVE.maxPlayers} players`, run: () => joinLobby(player, lobby.leaderId) });
+  }
+  if (mine) buttons.push({ text: "§cLeave this run", run: () => (leaveLobby(player), player.sendMessage("§eYou left the run.")) });
+  buttons.push({ text: "Close", run: () => {} });
+  menu(player, "§2§lPvE Bot", body, buttons);
 }
