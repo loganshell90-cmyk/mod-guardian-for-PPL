@@ -103,7 +103,7 @@ function newPlot() {
   return { owner: "", ownerName: "", gens: 1, level: 0, built: false };
 }
 
-/** Plot n (1 to 100). Custom x/y/z is set when an admin moves the plot. */
+/** Plot n (1 to PLOTS.count). Custom x/y/z is set when an admin moves the plot. */
 export function getPlot(n) {
   if (plotCache.has(n)) return plotCache.get(n);
   const plot = { ...newPlot(), ...(readJson(`hsg:plot:${n}`) ?? {}) };
@@ -112,7 +112,17 @@ export function getPlot(n) {
 }
 
 export function savePlot(n) {
-  world.setDynamicProperty(`hsg:plot:${n}`, JSON.stringify(getPlot(n)));
+  const plot = getPlot(n);
+  if (plot.x !== undefined) movedPlots.add(n);
+  world.setDynamicProperty(`hsg:plot:${n}`, JSON.stringify(plot));
+}
+
+// Plots an admin moved away from the grid. Filled in by loadPlots().
+const movedPlots = new Set();
+
+/** Reads every plot once when the world loads. */
+export function loadPlots() {
+  for (let n = 1; n <= PLOTS.count; n++) if (getPlot(n).x !== undefined) movedPlots.add(n);
 }
 
 export function resetPlot(n) {
@@ -137,13 +147,18 @@ export function plotCenter(n) {
   };
 }
 
+const inArea = (location, c) => Math.abs(location.x - c.x) <= PLOTS.protect && Math.abs(location.z - c.z) <= PLOTS.protect;
+
 /** The plot whose area contains this spot, or 0. */
 export function plotAt(location) {
-  for (let n = 1; n <= PLOTS.count; n++) {
-    const c = plotCenter(n);
-    if (Math.abs(location.x - c.x) <= PLOTS.protect && Math.abs(location.z - c.z) <= PLOTS.protect) return n;
-  }
-  return 0;
+  for (const n of movedPlots) if (inArea(location, plotCenter(n))) return n;
+  // Grid plots: work out which grid square this is instead of checking all of them.
+  const col = Math.round((location.x - PLOTS.baseX) / PLOTS.spacing);
+  const row = Math.round((location.z - PLOTS.baseZ) / PLOTS.spacing);
+  if (col < 0 || col >= PLOTS.perRow || row < 0) return 0;
+  const n = row * PLOTS.perRow + col + 1;
+  if (n > PLOTS.count || movedPlots.has(n)) return 0;
+  return inArea(location, plotCenter(n)) ? n : 0;
 }
 
 export function firstFreePlot() {

@@ -9,7 +9,7 @@ import {
   world,
 } from "@minecraft/server";
 import { JOIN_DELAY_SECONDS, PLOTS } from "./config.js";
-import { firstFreePlot, getHub, getPlot, getStats, isNewPlayer, plotAt, saveStats } from "./data.js";
+import { firstFreePlot, getHub, getPlot, getStats, isNewPlayer, loadPlots, plotAt, saveStats } from "./data.js";
 import { claimPlot, plotForGenerator, rebuildGenIndex, regenerate, sendHome, sendToHub, sendToPlot, startFallCatcher } from "./islands.js";
 import { startLeaderboards } from "./leaderboard.js";
 import { giveItem, isAdmin, makePickaxe, moneyBotMenu, skyMenu, upgradeBotMenu } from "./menus.js";
@@ -54,6 +54,7 @@ system.beforeEvents.startup.subscribe(({ customCommandRegistry }) => {
 // ---------- Startup ----------
 
 world.afterEvents.worldLoad.subscribe(() => {
+  loadPlots();
   rebuildGenIndex();
   startFallCatcher();
   startLeaderboards();
@@ -93,7 +94,7 @@ world.afterEvents.playerSpawn.subscribe(({ player, initialSpawn }) => {
       claimPlot(player, n);
       player.sendMessage(`§a${player.name} has been given Plot ${n}!`);
     } else {
-      player.sendMessage("§cAll 100 islands are taken. Ask an admin to free one up.");
+      player.sendMessage(`§cAll ${PLOTS.count} islands are taken. Ask an admin to free one up.`);
     }
   }
 

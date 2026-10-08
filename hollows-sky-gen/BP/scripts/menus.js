@@ -53,11 +53,22 @@ export function skyMenu(player) {
 
 function visitMenu(player) {
   const buttons = [];
-  for (let n = 1; n <= PLOTS.count; n++) {
+  for (let start = 1; start <= PLOTS.count; start += 50) {
+    const end = Math.min(start + 49, PLOTS.count);
+    let taken = 0;
+    for (let n = start; n <= end; n++) if (getPlot(n).owner) taken++;
+    if (taken) buttons.push({ text: `Islands ${start} - ${end}\n§8${taken} taken`, run: () => visitPage(player, start, end) });
+  }
+  menu(player, "Visit an Island", buttons.length ? "Pick a group. You can also type /plot <number>." : "No islands yet.", buttons);
+}
+
+function visitPage(player, start, end) {
+  const buttons = [];
+  for (let n = start; n <= end; n++) {
     const plot = getPlot(n);
     if (plot.owner) buttons.push({ text: `Plot ${n}\n§8${plot.ownerName}`, run: () => sendToPlot(player, n, plot.owner === player.id) });
   }
-  menu(player, "Visit an Island", buttons.length ? "Pick an island. You can also type /plot <number>." : "No islands yet.", buttons);
+  menu(player, `Islands ${start} - ${end}`, "Pick an island.", buttons);
 }
 
 export function statsText(stats) {
@@ -294,7 +305,16 @@ function removeNearestBot(player) {
 
 function movePlotMenu(player) {
   const buttons = [];
-  for (let n = 1; n <= PLOTS.count; n++) {
+  for (let start = 1; start <= PLOTS.count; start += 50) {
+    const end = Math.min(start + 49, PLOTS.count);
+    buttons.push({ text: `Plots ${start} - ${end}`, run: () => movePlotPage(player, start, end) });
+  }
+  menu(player, "Move a plot", "Pick which plots to choose from.", buttons);
+}
+
+function movePlotPage(player, start, end) {
+  const buttons = [];
+  for (let n = start; n <= end; n++) {
     const plot = getPlot(n);
     buttons.push({
       text: `Plot ${n}\n§8${plot.owner ? plot.ownerName : "empty"}`,

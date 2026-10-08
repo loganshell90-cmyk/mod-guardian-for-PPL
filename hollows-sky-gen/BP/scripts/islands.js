@@ -135,7 +135,7 @@ export function sendToPlot(player, n, isOwner) {
 
 export function sendHome(player) {
   const stats = getStats(player);
-  if (!stats.plot) return player.sendMessage("§cYou don't have an island. All 100 plots are taken.");
+  if (!stats.plot) return player.sendMessage(`§cYou don't have an island. All ${PLOTS.count} plots are taken.`);
   sendToPlot(player, stats.plot, true);
 }
 

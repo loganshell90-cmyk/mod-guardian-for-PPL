@@ -1,7 +1,7 @@
 Hollow's Sky Gen - Part 1
 =========================
 
-A Minecraft Bedrock add-on: 100 sky islands, generators, money, upgrades,
+A Minecraft Bedrock add-on: 1000 sky islands, generators, money, upgrades,
 stats and leaderboards. PvP (Part 2) and PvE (Part 3) come later.
 
 Install
@@ -15,7 +15,7 @@ How it plays
 * The first person to ever join the world becomes the admin.
 * Admin: open the Sky Menu (the glowing gem) > Admin Tools > "Build the hub here".
   That makes the hub island with the Money Bot and Upgrade Bot.
-* Every player who joins gets the next free plot (1 to 100). After a 10 second
+* Every player who joins gets the next free plot (1 to 1000). After a 10 second
   countdown they're sent to their island, which is built the first time.
 * Mine the generators (the blocks sitting on bedrock). They grow back.
 * Go to the hub (/hub) and sell to the Money Bot. Spend money at the Upgrade Bot
