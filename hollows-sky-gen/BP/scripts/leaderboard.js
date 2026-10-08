@@ -1,10 +1,17 @@
 // Top 10 leaderboards: shown on the side of the screen and floating above islands.
 import { DisplaySlotId, ObjectiveSortOrder, system, world } from "@minecraft/server";
 import { LEADERBOARD_SECONDS } from "./config.js";
-import { allPlayers, kdr, money } from "./data.js";
+import { allPlayers, kdr, money, rankName } from "./data.js";
 
 export const BOARDS = [
   { id: "money", title: "Top Money", value: (s) => s.money, show: (s) => money(s.money) },
+  {
+    id: "rank",
+    title: "Top Ranked",
+    value: (s) => (s.rankedGames > 0 ? s.rating : 0),
+    show: (s) => `${rankName(s)} §f${s.rating}`,
+  },
+  { id: "wins", title: "Most PvP Wins", value: (s) => s.wins, show: (s) => `${s.wins}` },
   { id: "kills", title: "Top Kills", value: (s) => s.kills, show: (s) => `${s.kills}` },
   { id: "kdr", title: "Top K/D Ratio", value: (s) => kdr(s), show: (s) => kdr(s).toFixed(2) },
   { id: "deaths", title: "Most Deaths", value: (s) => s.deaths, show: (s) => `${s.deaths}` },

@@ -9,10 +9,11 @@ import {
   world,
 } from "@minecraft/server";
 import { JOIN_DELAY_SECONDS, PLOTS } from "./config.js";
-import { firstFreePlot, getHub, getPlot, getStats, isNewPlayer, loadPlots, plotAt, saveStats } from "./data.js";
+import { firstFreePlot, getHub, getPlot, getStats, isNewPlayer, loadPlots, plotAt, saveStats, updateNameTag } from "./data.js";
 import { claimPlot, plotForGenerator, rebuildGenIndex, regenerate, sendHome, sendToHub, sendToPlot, startFallCatcher } from "./islands.js";
 import { startLeaderboards } from "./leaderboard.js";
-import { giveItem, isAdmin, makePickaxe, moneyBotMenu, skyMenu, upgradeBotMenu } from "./menus.js";
+import { giveItem, isAdmin, makePickaxe, moneyBotMenu, pvpBotMenu, pvpShopMenu, skyMenu, upgradeBotMenu } from "./menus.js";
+import { arenaAt, needsReturn, returnPlayer, startPvp } from "./pvp.js";
 
 // ---------- Slash commands: /plot, /hub, /skymenu ----------
 
@@ -58,6 +59,7 @@ world.afterEvents.worldLoad.subscribe(() => {
   rebuildGenIndex();
   startFallCatcher();
   startLeaderboards();
+  startPvp();
 
   // Time played: +1 minute for everyone online.
   system.runInterval(() => {
@@ -75,6 +77,9 @@ world.afterEvents.playerSpawn.subscribe(({ player, initialSpawn }) => {
   const firstTime = isNewPlayer(player);
   const stats = getStats(player);
   saveStats(player);
+  updateNameTag(player);
+  // Left the game during a PvP match: undo spectator mode first.
+  if (needsReturn(player)) returnPlayer(player);
 
   // The very first person to ever join (the world's host) becomes the admin.
   if (!world.getDynamicProperty("hsg:hasAdmin")) {
@@ -133,6 +138,7 @@ function isProtected(player, location) {
   if (isAdmin(player)) return false;
   const hub = getHub();
   if (hub && Math.abs(location.x - hub.x) <= 30 && Math.abs(location.z - hub.z) <= 30) return true;
+  if (arenaAt(location)) return true;
   const n = plotAt(location);
   return n !== 0 && getPlot(n).owner !== player.id;
 }
@@ -177,4 +183,6 @@ world.afterEvents.playerInteractWithEntity.subscribe(({ player, target }) => {
   const role = target.getDynamicProperty("role");
   if (role === "money") moneyBotMenu(player);
   else if (role === "upgrade") upgradeBotMenu(player);
+  else if (role === "pvp") pvpBotMenu(player);
+  else if (role === "shop") pvpShopMenu(player);
 });

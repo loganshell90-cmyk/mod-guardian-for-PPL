@@ -74,3 +74,59 @@ export const PICKAXES = [
 
 // Seconds each leaderboard stays on the side of the screen before switching.
 export const LEADERBOARD_SECONDS = 8;
+
+// ---------- PvP (Part 2) ----------
+
+// Arenas float far away from the islands. Each one runs one match at a time.
+export const ARENAS = {
+  baseX: -10000,
+  baseZ: -10000,
+  y: 160,
+  spacing: 200,
+  count1v1: 4,
+  count2v2: 4,
+  radius1v1: 12,
+  radius2v2: 16,
+};
+
+// Money for winning. Everyone on the winning team gets it.
+export const PVP_PRIZE = { casual: 50, ranked: 100 };
+
+// Ranked: everyone starts at 1000. Win and it goes up, lose and it goes down.
+export const START_RATING = 1000;
+export const RATING_K = 32; // the most a single match can change your rating
+
+// Rank tiers, lowest first. min = rating needed.
+export const RANKS = [
+  { name: "Bronze", color: "§6", min: 0 },
+  { name: "Silver", color: "§7", min: 1100 },
+  { name: "Gold", color: "§e", min: 1250 },
+  { name: "Diamond", color: "§b", min: 1400 },
+  { name: "Netherite", color: "§5", min: 1600 },
+];
+
+// Ranked matchmaking: how far apart ratings can be. Grows the longer people wait.
+export const RANKED_RANGE = { start: 150, growPer10s: 50 };
+
+// PvP Shop Bot. items = [item, amount].
+export const PVP_SHOP = [
+  { name: "Golden Apple", cost: 150, items: [["minecraft:golden_apple", 1]] },
+  { name: "Ender Pearls x4", cost: 200, items: [["minecraft:ender_pearl", 4]] },
+  { name: "Steak x16", cost: 50, items: [["minecraft:cooked_beef", 16]] },
+  { name: "Shield", cost: 150, items: [["minecraft:shield", 1]] },
+  { name: "Bow + 32 Arrows", cost: 300, items: [["minecraft:bow", 1], ["minecraft:arrow", 32]] },
+  { name: "Iron Sword", cost: 200, items: [["minecraft:iron_sword", 1]] },
+  { name: "Diamond Sword", cost: 1000, items: [["minecraft:diamond_sword", 1]] },
+  {
+    name: "Iron Armor Set",
+    cost: 800,
+    items: [["minecraft:iron_helmet", 1], ["minecraft:iron_chestplate", 1], ["minecraft:iron_leggings", 1], ["minecraft:iron_boots", 1]],
+  },
+  {
+    name: "Diamond Armor Set",
+    cost: 4000,
+    items: [["minecraft:diamond_helmet", 1], ["minecraft:diamond_chestplate", 1], ["minecraft:diamond_leggings", 1], ["minecraft:diamond_boots", 1]],
+  },
+  { name: "Totem of Undying", cost: 3000, items: [["minecraft:totem_of_undying", 1]] },
+  { name: "Enchanted Golden Apple", cost: 2500, items: [["minecraft:enchanted_golden_apple", 1]] },
+];

@@ -1,13 +1,27 @@
 // Saved data. Everything is stored in the world itself, so it survives restarts.
 import { world } from "@minecraft/server";
-import { PLOTS } from "./config.js";
+import { PLOTS, RANKS, START_RATING } from "./config.js";
 
 // ---------- Player stats and money ----------
 
 const statsCache = new Map();
 
 function newStats(name) {
-  return { name, money: 0, kills: 0, deaths: 0, mobs: 0, mined: 0, minutes: 0, pick: 0, plot: 0 };
+  return {
+    name,
+    money: 0,
+    kills: 0,
+    deaths: 0,
+    mobs: 0,
+    mined: 0,
+    minutes: 0,
+    pick: 0,
+    plot: 0,
+    rating: START_RATING,
+    rankedGames: 0,
+    wins: 0,
+    losses: 0,
+  };
 }
 
 function readJson(key) {
@@ -174,4 +188,24 @@ export function getHub() {
 
 export function setHub(location) {
   world.setDynamicProperty("hsg:hub", JSON.stringify(location));
+}
+
+// ---------- Ranks ----------
+
+export function rankOf(stats) {
+  let rank = RANKS[0];
+  for (const r of RANKS) if (stats.rating >= r.min) rank = r;
+  return rank;
+}
+
+/** e.g. "§eGold" */
+export function rankName(stats) {
+  const r = rankOf(stats);
+  return `${r.color}${r.name}`;
+}
+
+/** Shows the player's rank above their head, e.g. "[Gold] Jimmy". */
+export function updateNameTag(player) {
+  const stats = getStats(player);
+  player.nameTag = `§8[${rankName(stats)}§8] §f${player.name}`;
 }

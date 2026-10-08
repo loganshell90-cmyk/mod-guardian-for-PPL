@@ -1,8 +1,9 @@
 // All the pop-up screens: Sky Menu, Money Bot, Upgrade Bot, stats and admin tools.
 import { EnchantmentTypes, ItemStack, system, world } from "@minecraft/server";
 import { ActionFormData, FormCancelationReason } from "@minecraft/server-ui";
-import { GEN_LEVELS, GEN_SLOT_COST, GEN_SPOTS, PICKAXES, PLOTS, SELL_PRICES } from "./config.js";
-import { addMoney, allPlayers, getPlot, getStats, kdr, money, resetPlot, savePlot, saveStats, statsById, trySpend } from "./data.js";
+import { GEN_LEVELS, GEN_SLOT_COST, GEN_SPOTS, PICKAXES, PLOTS, PVP_PRIZE, PVP_SHOP, RANKS, SELL_PRICES } from "./config.js";
+import { addMoney, allPlayers, getPlot, getStats, kdr, money, rankName, resetPlot, savePlot, saveStats, statsById, trySpend } from "./data.js";
+import { inMatch, joinQueue, leaveQueue, QUEUES, queueCount, queueOf } from "./pvp.js";
 import {
   buildHub,
   preparePlot,
@@ -79,6 +80,8 @@ export function statsText(stats) {
     `§rKills: §c${stats.kills}`,
     `§rDeaths: §7${stats.deaths}`,
     `§rK/D Ratio: §e${kdr(stats).toFixed(2)}`,
+    `§rRank: ${rankName(stats)} §7(${stats.rating} rating, ${stats.rankedGames} ranked games)`,
+    `§rPvP Wins: §a${stats.wins} §r Losses: §c${stats.losses}`,
     `§rMobs Killed: §2${stats.mobs}`,
     `§rBlocks Mined: §6${stats.mined}`,
     `§rTime Played: §b${timePlayed(stats.minutes)}`,
@@ -288,6 +291,8 @@ function adminMenu(player) {
     { text: "Build the hub here\n§8Island + both bots", run: () => buildHub(player) },
     { text: "Spawn Money Bot here", run: () => spawnBot("money", player.location) },
     { text: "Spawn Upgrade Bot here", run: () => spawnBot("upgrade", player.location) },
+    { text: "Spawn PvP Bot here", run: () => spawnBot("pvp", player.location) },
+    { text: "Spawn PvP Shop here", run: () => spawnBot("shop", player.location) },
     { text: "Remove nearest bot", run: () => removeNearestBot(player) },
     { text: "Move a plot to here", run: () => movePlotMenu(player) },
     { text: "Free up a plot", run: () => freePlotMenu(player) },
@@ -351,4 +356,55 @@ function freePlotMenu(player) {
     });
   }
   menu(player, "Free up a plot", buttons.length ? "The owner loses the plot. The island stays for the next player." : "No plots are taken.", buttons);
+}
+
+// ---------- PvP Bot ----------
+
+export function pvpBotMenu(player) {
+  const stats = getStats(player);
+  if (inMatch(player)) return player.sendMessage("§cYou're already in a match.");
+  const current = queueOf(player);
+  const ranks = RANKS.map((r) => `${r.color}${r.name}§r ${r.min}+`).join("  ");
+  const body = [
+    `Your rank: ${rankName(stats)}§r (${stats.rating} rating)`,
+    `Wins: §a${stats.wins}§r  Losses: §c${stats.losses}`,
+    "",
+    `§lCasual§r: fight anyone with whatever gear you have. Win ${money(PVP_PRIZE.casual)}.`,
+    `§lRanked§r: you're matched with players near your rating. Win to rank up, lose and you drop. Win ${money(PVP_PRIZE.ranked)}.`,
+    "",
+    `Ranks: ${ranks}`,
+    "",
+    "You keep all your items. Afterwards you go back where you were.",
+  ].join("\n");
+  const buttons = Object.entries(QUEUES).map(([key, q]) => ({
+    text: `${current === key ? "§2> " : ""}${q.name}\n§8${queueCount(key)} waiting`,
+    run: () => joinQueue(player, key),
+  }));
+  if (current) buttons.push({ text: "§cLeave the queue", run: () => (leaveQueue(player), player.sendMessage("§eYou left the queue.")) });
+  buttons.push({ text: "Close", run: () => {} });
+  menu(player, "§c§lPvP Bot", body, buttons);
+}
+
+// ---------- PvP Shop ----------
+
+export function pvpShopMenu(player) {
+  const stats = getStats(player);
+  menu(
+    player,
+    "§d§lPvP Shop",
+    `You have §a${money(stats.money)}§r.`,
+    [
+      ...PVP_SHOP.map((entry) => ({
+        text: `${entry.name}\n§8${money(entry.cost)}`,
+        run: () => {
+          if (!trySpend(player, entry.cost)) return player.sendMessage(`§cYou need ${money(entry.cost)} for that.`);
+          for (const [id, amount] of entry.items) giveItem(player, new ItemStack(String(id), Number(amount)));
+          player.sendMessage(`§aBought ${entry.name}.`);
+          player.playSound("random.orb");
+          pvpShopMenu(player);
+        },
+      })),
+      { text: "Close", run: () => {} },
+    ]
+  );
 }

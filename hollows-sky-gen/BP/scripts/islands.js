@@ -97,7 +97,15 @@ export function preparePlot(n) {
  * Teleports a player to an island. Slow falling keeps them safe while the
  * area loads; then the island is built and they're moved onto it.
  */
+// PvP sets this so players can't teleport out of a match. Returns a message, or "" if allowed.
+let travelBlocker = (_player) => "";
+export function setTravelBlocker(fn) {
+  travelBlocker = fn;
+}
+
 export function sendToPlot(player, n, isOwner) {
+  const blocked = travelBlocker(player);
+  if (blocked) return player.sendMessage(blocked);
   const c = plotCenter(n);
   const spawn = { x: c.x + 0.5, y: c.y + 1, z: c.z + 0.5 };
   player.addEffect("slow_falling", 400, { showParticles: false });
@@ -140,6 +148,8 @@ export function sendHome(player) {
 }
 
 export function sendToHub(player) {
+  const blocked = travelBlocker(player);
+  if (blocked) return player.sendMessage(blocked);
   const hub = getHub();
   if (!hub) return player.sendMessage("§cThere's no hub yet. An admin can build one from the Sky Menu.");
   player.teleport({ x: hub.x + 0.5, y: hub.y + 1, z: hub.z + 0.5 }, { dimension: overworld() });
@@ -153,12 +163,16 @@ export function buildHub(player) {
   world.setDynamicProperty("hsg:hub", JSON.stringify(c));
   spawnBot("money", { x: c.x - 4 + 0.5, y: c.y + 1, z: c.z - 6 + 0.5 });
   spawnBot("upgrade", { x: c.x + 4 + 0.5, y: c.y + 1, z: c.z - 6 + 0.5 });
+  spawnBot("pvp", { x: c.x - 4 + 0.5, y: c.y + 1, z: c.z + 6 + 0.5 });
+  spawnBot("shop", { x: c.x + 4 + 0.5, y: c.y + 1, z: c.z + 6 + 0.5 });
   spawnBoard({ x: c.x + 0.5, y: c.y + 4, z: c.z - 8.5 });
 }
 
 export const BOT_NAMES = {
   money: "§a§lMoney Bot\n§r§7Sell your stuff",
   upgrade: "§b§lUpgrade Bot\n§r§7Pickaxes & generators",
+  pvp: "§c§lPvP Bot\n§r§7Casual & Ranked matches",
+  shop: "§d§lPvP Shop\n§r§7Gear for fighting",
 };
 
 export function spawnBot(role, location) {
