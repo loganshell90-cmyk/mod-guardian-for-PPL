@@ -16,6 +16,11 @@ export const PLOTS = {
 };
 
 export const HUB_RADIUS = 12;
+// Where the hub is built automatically the first time anyone goes there.
+// (An admin can still rebuild it somewhere else from Admin Tools.)
+export const HUB_DEFAULT = { x: 9500, y: 180, z: 9500 };
+// Where each bot stands on the hub (x, z from the center). Missing bots come back by themselves.
+export const HUB_BOTS = { money: [-4, -6], upgrade: [4, -6], pvp: [-4, 6], shop: [4, 6] };
 
 // Generator levels. Every generator on an island uses the island's level.
 // delay = ticks before the block comes back (20 ticks = 1 second).

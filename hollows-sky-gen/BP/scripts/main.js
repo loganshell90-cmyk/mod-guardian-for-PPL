@@ -85,7 +85,7 @@ world.afterEvents.playerSpawn.subscribe(({ player, initialSpawn }) => {
   if (!world.getDynamicProperty("hsg:hasAdmin")) {
     world.setDynamicProperty("hsg:hasAdmin", true);
     player.addTag("hsg_admin");
-    player.sendMessage("§eYou're the admin. Open the Sky Menu > Admin Tools and build the hub.");
+    player.sendMessage("§eYou're the admin. Admin Tools are in the Sky Menu. Type /hub to see the hub.");
   }
 
   if (firstTime) {

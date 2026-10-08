@@ -1,6 +1,6 @@
 // Building islands, generators, teleporting, bots and floating leaderboards.
 import { system, world, GameMode } from "@minecraft/server";
-import { GEN_LEVELS, GEN_SPOTS, HUB_RADIUS, PLOTS } from "./config.js";
+import { GEN_LEVELS, GEN_SPOTS, HUB_BOTS, HUB_DEFAULT, HUB_RADIUS, PLOTS } from "./config.js";
 import { firstFreePlot, getHub, getPlot, getStats, plotAt, plotCenter, resetPlot, savePlot, saveStats, saveStatsById, statsById } from "./data.js";
 
 const overworld = () => world.getDimension("overworld");
@@ -150,22 +150,60 @@ export function sendHome(player) {
 export function sendToHub(player) {
   const blocked = travelBlocker(player);
   if (blocked) return player.sendMessage(blocked);
-  const hub = getHub();
-  if (!hub) return player.sendMessage("§cThere's no hub yet. An admin can build one from the Sky Menu.");
-  player.teleport({ x: hub.x + 0.5, y: hub.y + 1, z: hub.z + 0.5 }, { dimension: overworld() });
+  const hub = getHub() ?? HUB_DEFAULT;
+  const spot = { x: hub.x + 0.5, y: hub.y + 1, z: hub.z + 0.5 };
+  if (getHub() && overworld().getBlock(hub)) {
+    ensureHubBots();
+    return player.teleport(spot, { dimension: overworld() });
+  }
+  // The hub area isn't loaded (or doesn't exist yet): wait for it, then build it if needed.
+  player.addEffect("slow_falling", 400, { showParticles: false });
+  player.teleport({ ...spot, y: spot.y + 2 }, { dimension: overworld() });
+  let tries = 0;
+  const job = system.runInterval(() => {
+    tries++;
+    if (!player.isValid) return system.clearRun(job);
+    if (!overworld().getBlock(hub)) {
+      if (tries > 60) {
+        system.clearRun(job);
+        player.sendMessage("§cThe hub took too long to load. Try /hub again.");
+      }
+      return;
+    }
+    system.clearRun(job);
+    if (!getHub()) buildHubAt(hub);
+    ensureHubBots();
+    player.teleport(spot, { dimension: overworld() });
+    player.removeEffect("slow_falling");
+  }, 5);
 }
 
 /** Builds a big island under the player and puts the bots and a leaderboard on it. */
+/** Admin tool: builds the hub under the player instead of the default spot. */
 export function buildHub(player) {
   const l = player.location;
-  const c = { x: Math.floor(l.x), y: Math.floor(l.y) - 1, z: Math.floor(l.z) };
+  buildHubAt({ x: Math.floor(l.x), y: Math.floor(l.y) - 1, z: Math.floor(l.z) });
+  ensureHubBots();
+}
+
+function buildHubAt(c) {
   buildIsland(c, HUB_RADIUS);
   world.setDynamicProperty("hsg:hub", JSON.stringify(c));
-  spawnBot("money", { x: c.x - 4 + 0.5, y: c.y + 1, z: c.z - 6 + 0.5 });
-  spawnBot("upgrade", { x: c.x + 4 + 0.5, y: c.y + 1, z: c.z - 6 + 0.5 });
-  spawnBot("pvp", { x: c.x - 4 + 0.5, y: c.y + 1, z: c.z + 6 + 0.5 });
-  spawnBot("shop", { x: c.x + 4 + 0.5, y: c.y + 1, z: c.z + 6 + 0.5 });
-  spawnBoard({ x: c.x + 0.5, y: c.y + 4, z: c.z - 8.5 });
+}
+
+/**
+ * Spawns any hub bot that's missing (and the leaderboard). Only works while
+ * the hub is loaded, which is whenever a player is near it.
+ */
+export function ensureHubBots() {
+  const hub = getHub();
+  if (!hub || !overworld().getBlock(hub)) return;
+  const near = overworld().getEntities({ type: "hsg:bot", location: hub, maxDistance: HUB_RADIUS + 20 });
+  for (const [role, [dx, dz]] of Object.entries(HUB_BOTS)) {
+    if (near.some((bot) => bot.getDynamicProperty("role") === role)) continue;
+    spawnBot(role, { x: hub.x + dx + 0.5, y: hub.y + 1, z: hub.z + dz + 0.5 });
+  }
+  spawnBoard({ x: hub.x + 0.5, y: hub.y + 4, z: hub.z - 8.5 });
 }
 
 export const BOT_NAMES = {
@@ -183,6 +221,15 @@ export function spawnBot(role, location) {
 
 /** Every 2 seconds: catch anyone falling off an island and put them back. */
 export function startFallCatcher() {
+  // Every 10 seconds: bring back any hub bot that went missing.
+  system.runInterval(() => {
+    try {
+      ensureHubBots();
+    } catch {
+      // Hub not loaded right now.
+    }
+  }, 200);
+
   system.runInterval(() => {
     const hub = getHub();
     for (const player of world.getAllPlayers()) {

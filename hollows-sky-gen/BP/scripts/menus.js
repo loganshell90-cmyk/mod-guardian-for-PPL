@@ -294,7 +294,7 @@ function adminMenu(player) {
     { text: "Spawn Upgrade Bot here", run: () => spawnBot("upgrade", player.location) },
     { text: "Spawn PvP Bot here", run: () => spawnBot("pvp", player.location) },
     { text: "Spawn PvP Shop here", run: () => spawnBot("shop", player.location) },
-    { text: "Remove nearest bot", run: () => removeNearestBot(player) },
+    { text: "Remove nearest bot\n§8Hub bots come back by themselves", run: () => removeNearestBot(player) },
     { text: "Move a plot to here", run: () => movePlotMenu(player) },
     { text: "Put a player on a different plot", run: () => setPlotMenu(player) },
     { text: "Free up a plot", run: () => freePlotMenu(player) },

@@ -13,8 +13,10 @@ Install
 How it plays
 ------------
 * The first person to ever join the world becomes the admin.
-* Admin: open the Sky Menu (the glowing gem) > Admin Tools > "Build the hub here".
-  That makes the hub island with the Money Bot and Upgrade Bot.
+* The hub builds itself the first time anyone goes there (/hub), with the
+  Money Bot, Upgrade Bot, PvP Bot, PvP Shop and a leaderboard. If a bot goes
+  missing, it comes back by itself within about 10 seconds while someone is
+  near the hub. An admin can rebuild the hub somewhere else from Admin Tools.
 * Every player who joins gets the next free plot (1 to 350). After a 10 second
   countdown they're sent to their island, which is built the first time.
 * Mine the generators (the blocks sitting on bedrock). They grow back.
@@ -36,8 +38,6 @@ PvP
   Falling out of the arena or leaving the game also knocks you out.
 * Winners get money. Afterwards everyone goes back where they were.
 * The PvP Shop sells golden apples, pearls, armor, swords, totems and more.
-* Already built the hub before PvP existed? Admin Tools > "Spawn PvP Bot here"
-  and "Spawn PvP Shop here".
 
 Commands
 --------
